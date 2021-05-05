@@ -1,0 +1,10 @@
+2. The minimum SFR_UV from galaxies selected in 1.) is: 0.01267676 solar masses per year
+2. The maximum SFR_UV from galaxies selected in 1.) is: 13.24592 solar masses per year
+2. The median SFR_UV from galaxies selected in 1.) is: 0.8991445 solar masses per year
+4. The minimum SFR_tot from galaxies selected in 3.) is: 0.238191490298 solar masses per year
+4. The maximum SFR_tot from galaxies selected in 3.) is: 54.11051 solar masses per year
+4. The median SFR_tot from galaxies selected in 3.) is: 6.258596900000001 solar masses per year
+4. The median SFR_UV from galaxies selected in 3.) is: 1.441566 solar masses per year
+4. The ratio R is: 4.341526437221744
+6. The number of galaxies selected in 3.) with M* greater than MW is: 48
+6. The number of galaxies selected in 3.) with SFR greater than MW is: 217

@@ -1,0 +1,4 @@
+1. Number of galaxies: 7869
+2. Number of galaxies with 0.55 < z < 0.60: 400
+3. Number of galaxies with 0.55 < z < 0.60 and M* > 1e11 Mdot: 169
+4. Number of galaxies from Problem 3 with WHMIPS Detection: 77

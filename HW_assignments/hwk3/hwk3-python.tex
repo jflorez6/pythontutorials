@@ -1,0 +1,341 @@
+\documentclass[11pt]{article}    % stand alone latex
+\usepackage{graphicx,epsfig}
+\usepackage{listings}
+\usepackage{enumerate}
+
+%%%%%%%%%%% LAYOUT  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LTSA : at least 1 inch (2.5 cm) margins on all sides; 
+\topmargin  -0.03 in 
+%\topmargin  1.0in
+\oddsidemargin  0.05 in           % this give roughly 1.0 in left margin
+%\evensidemargin 1.00 in
+\textwidth  6.4 in  		% normal width 6 in        
+\textheight 9.2 in 		%normal 22.86cm (9 in) high 
+\headsep  0.05 in        % space between markboth and start of text
+\footskip 0.25 in
+%\footheight 0.25in
+\pretolerance=500   		%allow hyphenation
+\tolerance=500	    		%allow hyphenation
+\rightskip=0pt   		% allow justification
+%\parskip 10pt
+%%%%%%%%%%%%%%%%%% DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%%
+\def\bb{$B$-band}
+\def\vb{$V$-band}
+\def\rb{$R$-band}
+\def\ib{$I$-band}
+\def\zb{$z$-band}
+% units 
+\def\gtsim{\lower.5ex\hbox{$\buSildrel > \over\sim$}}
+\def\ltsim{\lower.5ex\hbox{$\buildrel < \over\sim$}}
+\def\arcsec{^{\prime\prime}}
+\def\arcmin{^\prime}
+% $1 \farcs 25$  for 1''.25
+% $11\farcm 3 $  for  11'.3
+\def\farcm{\hbox{$.\!\!^{\prime}$}} 
+\def\farcs{\hbox{$.\!\!^{\prime\prime}$}} 
+\def\farcss{\hbox{$.\!\!^{s}$}} 
+\def\deg{{$^\circ$}}
+\def\sun{\mbox{$_\odot$}}
+\def\kms{~km~s$^{-1}$}
+\def\jyb{~Jy~beam$^{-1}$}
+\def\jybkms{~Jy~beam$^{-1}$ km~s$^{-1}$}
+\def\mjyb{~mJy~beam$^{-1}$}
+\def\ra#1#2#3{#1$^{\rm h}$#2$^{\rm m}$#3$^{\rm s}$}
+\def\dec#1#2#3{$#1^\circ#2'#3''$}
+\def\e#1{\underline{#1}}  % external PI is underlined in tables
+\def\etal{{et al.~}}
+\def\hst{{\it HST}}
+\def\chandra{{\it Chandra}}
+\def\sirtf{{\it SIRTF}}
+%
+%  journal reference
+\def\apjl{ApJL}
+\def\apj{ApJ}
+\def\apjs{ApJS}
+\def\mnras{MNRAS}
+\def\araa{ARAA}
+\def\aj{AJ}
+\def\aap{A\&A}
+\def\aaps{A\&A Suppl.}
+\def\nat{Nature}
+\def\pasp{PASP}
+% chemical
+\def\h2{H$_{\rm 2}$}
+\def\co{CO}
+\def\co1{CO~($J$=1--0)}
+\def\tco{$^{13}$CO}
+\def\tco1{$^{13}$CO~($J$=1--0)}
+\def\ceo{C$^{18}$O}
+%\def\hf{H$_2$ $\nu=0$--$1$ S(1)}
+
+\def\hii{H{\sc ii}}
+%\def\hii{\hbox{H{ }{\sevenrm II}{ }}}
+\def\brg{Br~$\gamma$}
+\def\water{H$_2$O}
+\def\Ha{\,{\rm H\alpha}}
+\def\vlsr{$v_{\rm LSR}$}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+% PAGE STYLE FOR TABLE OF CONTENTS 
+%\pagestyle{plain}    		
+%\pagenumbering{roman}		% roman for Table of contents
+%\tableofcontents
+%\listoffigures
+%\listoftables
+%\clearpage
+%
+%  PAGE STYLE FOR TEXT 
+%\pagestyle{empty}         	% suppress page numbering 
+%\pagestyle{plain}   		% make page numbers at the bottom center
+% \pagestyle{myheadings}
+\pagenumbering{arabic}
+%\markboth{}{Project Description}
+\setcounter{page}{0}
+\pagenumbering{arabic}	 	% arabic for main text 
+\setcounter{section}{0}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+\Large
+{\bf Astro 376: Python Assignment 1 \\
+Using Conditional Array Operations on Large Catalogs}
+
+% IDL in Action: Exploring Star Formation and Extreme Systems At Early Epochs!}\\
+\vspace{4 mm}
+\large
+{\bf (Assigned on Th Apr 1, 2021. Due by 11.59 pm CT on Th. April 8, 2021.)}
+\end{center}
+
+%
+%     d)  - GIVE STUDENTS A HINT ON THE FORMAT THAT MUST BE USED
+%             TO READ THE CATALOG IN PART 1
+%  --- General tip  If a catalog is written out with the following format 
+%           format ='(G,1x,G,1x,A,1x,G)
+%     then to read it in with readcol, you need to use format 
+%            format ='(F,F,A,F)    --> replace G by F, and remove 1x
+%  --- For THE CATALOG in hwk3 you will need to use the following read format
+%    fmt = '(F,F,A,F,F,A,A,F,F,F,F,A,F)'
+%   readcol, '~/idl/hwk3/hwk3-catalog.txt', idno, galid, name, xpos, $
+%   ypos, rtile,   ztile, photz, rmag, mass, sfruv, whmips, sfrir, $
+%    format = fmt
+%
+%
+%
+
+\begin{center}
+\vspace{3.0 mm}
+\noindent
+{\bf{ Overview of Assignment}} 
+%{\bf{Instructions}} 
+\end{center}
+
+
+\begin{itemize}
+\item 
+\noindent
+In this homework, you will be applying what you have learnt in the
+Python tutorial over the last week. For some questions, you will need
+to go beyond the Python tutorial and consult online help. 
+We also assume that by now, you are comfortable with basic Mac OSX/Linux commands 
+and some text editor of your choice (like Aquamacs or Vi). Recall that you can let 
+Terminal choose a text editor for you if you type `{\tt{open file}}'. If you need
+a refresher please consult the Mac OSX/Linux tutorial that you 
+practiced in class earlier. The number of points for each question is indicated in brackets,
+and the total score is 100 points.
+
+\item 
+\noindent
+Your main task is to write a Python program, which does the following: 
+
+\vspace{-3mm}
+\begin{itemize}
+\item 
+\noindent
+Reads a  very large formatted catalog containing properties
+of galaxies (e.g., their redshifts, stellar masses,  and rates of star
+formation) out  to early epochs  {\it {when the Universe was less than 
+half of its present age}}.
+These properties were  derived using some of the most
+cutting-edge surveys of galaxies conducted with NASA's 
+{\it {Hubble Space Telescope}}  and  Spitzer Space Telescope,
+as well as  ground-based observations at many different wavelengths.
+
+\item 
+\noindent 
+Uses conditional operations on array indices to extract elements 
+that satisfy specific criteria  (e.g., specific redshift ranges,
+masses,  etc).
+
+\item  
+\noindent 
+Performs specific operations on these elements and writes a
+formatted output catalog.
+
+\end{itemize}
+\end{itemize}
+
+
+
+\begin{center}
+\vspace{3.0 mm}
+\noindent
+{\bf{ Detailed Instructions}}
+\end{center}
+
+\begin{enumerate}[(a)]
+
+\item 
+\vspace{2.0 mm}
+\noindent
+Create a sub-directory called `hwk3' in your python directory and change 
+(cd) to this directory. 
+Retrieve the file {\it `hwk3-catalog.txt'}  by typing   in a {\bf single} line 
+\begin{lstlisting}
+ curl -u cosmos:ast376web www.as.utexas.edu/~sj/a376-sp21/secure/hwk3/
+ hwk3-catalog.txt -o hkw3-catalog.txt
+\end{lstlisting}
+
+\item 
+\noindent
+Put all the files that you create for this homework into the 
+sub-directory  `$\sim$/python/hwk3'.
+{\it Your grade will be based  on the homework that 
+you hand in, as well as any electronic files you might be asked to 
+produce in this directory.}
+
+\item 
+\noindent
+Please write a single Python program 
+to do all the questions in this homework and put in 
+{\it {short comments within the program to indicate which part of the code 
+addresses which question.}} For instance, the comments might read `Code
+for question 1',  `Code for  question 2', etc. 
+{\it{ Please name your Python program    `hwk3-myname.py'', where  `myname' is  
+your name  (e.g.,   hwk3-jogee-shardha.py.)}}  
+Your code should be a Python script (.py file) that can be run from your hwk3 directory. Make 
+sure all relevant files are also in your hwk3 directory when you run your code and when you submit
+it.
+{\bf{Please submit your Python file with your name
+on it on Canvas. Please also submit a printout of the answers and of the output catalog  
+requested in questions 1 to 5.}}
+\clearpage
+Note that you can write the printout from a Python script (i.e., whatever is output by the print() command) if you execute your script as:
+
+\begin{lstlisting}
+python hwk3_myname.py > output.txt
+\end{lstlisting}
+
+\item 
+\noindent
+{\bf{
+For full credit, you must use the correct  way to program
+in Python.}} Getting to the right answer using a bad method will 
+only get you  partial credit. 
+Note that copying the programs of your fellow students is considered 
+as {\bf cheating} and will lead to a ``Fail'' grade for both
+the person who copies the program and the person who allow 
+their program to be copied.
+
+\end{enumerate}
+
+
+\begin{enumerate}
+
+\vspace{1mm}
+\item
+\noindent
+The catalog  `hwk3-catalog.txt' has information on a subset of 
+galaxies, which have been observed with the optical 
+Advanced Camera for Surveys (ACS) on the {\it Hubble Space Telescope}
+and the mid-infrared MIPS  instrument at a wavelength of 24 microns aboard 
+the {\it Spitzer Space Telescope}.  In addition, observations from 
+ground-based telescopes from the ultra-violet (UV) to near-infrared (NIR) 
+have also been taken.  Read through the header information in the catalog
+to understand the different quantities that have been recorded for 
+each galaxy. 
+
+Read in the file  `hwk3-catalog.txt' using the methods you learned
+in the Python tutorial.  You will need to specify the correct format since this is a
+complicated file.  Note that commented lines will be ignored by Python. How many galaxies did you successfully read in? \textbf{[25 points]}
+
+\vspace{2mm}
+
+Hint: To read in this catalog, use np.genfromtxt() which can handle strings, integers, and float variable types, instead np.loadtxt(). The usage for both is very similar. You will need to read in the string, float, and integer variables separately as np.genfromtxt() cannot read different variable types at the same time (i.e., you will load each variable type on a different line with np.genfromtxt()). See the posted Part\_2.ipynb solutions for an example of how to read in different data types and call different columns.
+
+\vspace{1mm}
+\item
+\noindent
+ Select all the galaxies that have photometric redshifts in the
+range $0.55 < z < 0.60$.  How many galaxies are in this range? 
+\textbf{[15 points]}.
+
+
+\vspace{1mm}
+\item
+\noindent
+ Of the galaxies you selected with redshifts $0.55 < z < 0.60$, how
+many of these have a stellar mass $M_* > 10^{10} \, M_{\odot}$? 
+\textbf{[15 points]}
+
+
+\vspace{1mm}
+\item
+\noindent
+ This catalog contains galaxies observed with
+the \emph{Hubble Space Telescope} in the UV and optical.  It is often
+useful to know which galaxies have been observed in other
+wavelengths.  This catalog contains a column ``WHMIPS'' that specifies
+whether or not a galaxy has been observed in the mid-infrared with 
+the \emph{Spitzer Space Telescope}.  In a future assignment, you will
+need to remove galaxies that do not have this measurement so that you
+can continue with your analysis.  Remove the galaxies from your answer
+to (3) that do not have a detection with \emph{Spitzer} at 24 $\mu$m.
+How many galaxies remain? \textbf{[15 points]}
+
+\vspace{1mm}
+\item
+\noindent
+Your sample of galaxies now contains all the galaxies for which
+chere is a \emph{Spitzer} detection at 24$\mu$m within the redshift
+range $0.55< z < 0.60$ that have stellar masses $M_*>10^{10} \,
+M_{\odot}$.  Now you will save the contents of this sample to an output catalog.
+called ``lastname-sample.txt'', where ``lastname'' is your last name.
+For each galaxy, save the galaxy name (column 3 of hwk3-catalog.txt),
+the stellar mass, the photometric redshift, and the value for
+``whmips''.  Your saved  output catalog  should look like a table where each row
+is a galaxy and each column is a different attribute. Turn in your
+output file. \textbf{[30 points]}
+
+Hint: For this problem, you should save all the variables as strings (see Part\_2.ipynb solutions for how to save different data types). The np.savetxt() function has trouble reading a combination of strings, floats, and integers so instead we can save all arrays as strings to get around this (note that you can then read that same data in as integers or floats when you read the saved output file in Python with  np.loadtxt or np.genfromtxt).
+\end{enumerate}
+
+\vspace{2mm}
+
+\noindent
+\textbf{For this assignment, please submit the following:}
+
+\begin{itemize}
+	\item Your python (.py) script file.
+	\item Your output sample catalog.
+	\item A text file with the answers to questions 1-4. The format of this text file is not important, we simply need to see the answers written somewhere.
+\end{itemize}
+
+\noindent
+We will review your python (.py) script files when we grade your submission, however, you should not expect us to run the code to obtain the answers to questions 1-4.
+
+\vspace{2mm}
+\begin{center}
+END OF ASSIGNMENT
+\end{center}
+
+\end{document}
+
+
+latex hwk3-idl.tex
+dvips -P pdf -o hwk3-idl.ps hwk3-idl
+ps2pdf13  hwk3-idl.ps  hwk3-idl.pdf
+
+or
+pdflatex hwk3-idl.tex
