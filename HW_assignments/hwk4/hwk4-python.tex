@@ -1,0 +1,461 @@
+\documentclass[11pt]{article}    % stand alone latex
+\usepackage{graphicx,epsfig}
+\usepackage{listings}
+\usepackage{enumerate}
+
+%%%%%%%%%%% LAYOUT  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LTSA : at least 1 inch (2.5 cm) margins on all sides; 
+\topmargin  -0.03 in 
+%\topmargin  1.0in
+\oddsidemargin  0.05 in           % this give roughly 1.0 in left margin
+%\evensidemargin 1.00 in
+\textwidth  6.4 in  		% normal width 6 in        
+\textheight 9.2 in 		%normal 22.86cm (9 in) high 
+\headsep  0.05 in        % space between markboth and start of text
+\footskip 0.25 in
+%\footheight 0.25in
+\pretolerance=500   		%allow hyphenation
+\tolerance=500	    		%allow hyphenation
+\rightskip=0pt   		% allow justification
+%\parskip 10pt
+%%%%%%%%%%%%%%%%%% DEFINITIONS %%%%%%%%%%%%%%%%%%%%%%%%
+\def\bb{$B$-band}
+\def\vb{$V$-band}
+\def\rb{$R$-band}
+\def\ib{$I$-band}
+\def\zb{$z$-band}
+% units 
+\def\gtsim{\lower.5ex\hbox{$\buSildrel > \over\sim$}}
+\def\ltsim{\lower.5ex\hbox{$\buildrel < \over\sim$}}
+\def\arcsec{^{\prime\prime}}
+\def\arcmin{^\prime}
+% $1 \farcs 25$  for 1''.25
+% $11\farcm 3 $  for  11'.3
+\def\farcm{\hbox{$.\!\!^{\prime}$}} 
+\def\farcs{\hbox{$.\!\!^{\prime\prime}$}} 
+\def\farcss{\hbox{$.\!\!^{s}$}} 
+\def\deg{{$^\circ$}}
+\def\sun{\mbox{$_\odot$}}
+\def\kms{~km~s$^{-1}$}
+\def\jyb{~Jy~beam$^{-1}$}
+\def\jybkms{~Jy~beam$^{-1}$ km~s$^{-1}$}
+\def\mjyb{~mJy~beam$^{-1}$}
+\def\ra#1#2#3{#1$^{\rm h}$#2$^{\rm m}$#3$^{\rm s}$}
+\def\dec#1#2#3{$#1^\circ#2'#3''$}
+\def\e#1{\underline{#1}}  % external PI is underlined in tables
+\def\etal{{et al.~}}
+\def\hst{{\it HST}}
+\def\chandra{{\it Chandra}}
+\def\sirtf{{\it SIRTF}}
+%
+%  journal reference
+\def\apjl{ApJL}
+\def\apj{ApJ}
+\def\apjs{ApJS}
+\def\mnras{MNRAS}
+\def\araa{ARAA}
+\def\aj{AJ}
+\def\aap{A\&A}
+\def\aaps{A\&A Suppl.}
+\def\nat{Nature}
+\def\pasp{PASP}
+% chemical
+\def\h2{H$_{\rm 2}$}
+\def\co{CO}
+\def\co1{CO~($J$=1--0)}
+\def\tco{$^{13}$CO}
+\def\tco1{$^{13}$CO~($J$=1--0)}
+\def\ceo{C$^{18}$O}
+%\def\hf{H$_2$ $\nu=0$--$1$ S(1)}
+
+\def\hii{H{\sc ii}}
+%\def\hii{\hbox{H{ }{\sevenrm II}{ }}}
+\def\brg{Br~$\gamma$}
+\def\water{H$_2$O}
+\def\Ha{\,{\rm H\alpha}}
+\def\vlsr{$v_{\rm LSR}$}
+%
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+% PAGE STYLE FOR TABLE OF CONTENTS 
+%\pagestyle{plain}    		
+%\pagenumbering{roman}		% roman for Table of contents
+%\tableofcontents
+%\listoffigures
+%\listoftables
+%\clearpage
+%
+%  PAGE STYLE FOR TEXT 
+%\pagestyle{empty}         	% suppress page numbering 
+%\pagestyle{plain}   		% make page numbers at the bottom center
+% \pagestyle{myheadings}
+\pagenumbering{arabic}
+%\markboth{}{Project Description}
+\setcounter{page}{0}
+\pagenumbering{arabic}	 	% arabic for main text 
+\setcounter{section}{0}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{center}
+\Large
+{\bf Astro 376: Python Assignment 2 (Homework 4)\\
+Exploring Star Formation and Extreme Systems At Early Epochs!}\\
+\vspace{4 mm}
+\large
+{\bf (Assigned on Tu Apr 13, 2021. Due by 11:59pm CT on Tu Apr 20, 2021)}
+
+\end{center}
+
+% 1) Note by SJ in Oct 2013
+%   Hwk 3 asked students to do a) b) c) below. This homework 4 also 
+%   asks them to also do steps  d)  and  e)
+%   - a) se readcol to read large formatted catalogs;  
+%   - b) to extract a subset of array indices whose elements fulfill conditions
+%        based on redshift, masses, SFR-UV, SFR-IR) bu using logical variables in  
+%         conditional operations  (e.g., xcon1= photz ge 0.1;l xcon2 = photz le 1.0; 
+%        xcon3 = stmass ge 1e10, etc) 
+%   - c) to write formatted catalogs 
+%   - d)  perform basic statistics 
+%   - e)  make plots (scatter plots, histograms, etc) 
+% 
+%   2)  Before giving  out  this homework put 
+%    /data1/proust/sj/azur1/classes/a376-fa12/hwk4-files/hwk4-catalog.txt
+%    to 
+%    /home/astro/exg/sj/www/a376-fa12/secure/hwk4/hwk4-catalog.txt
+% 
+%  3)  When giving out  this homework, explain or specify the following:
+%   a) GO OVER ITEMS TO HAND IN : Remind them they  need to hand in 
+%           -- hardcopy of your program with your name on it and 
+%                relevant parts labelled  "Code for part 1",  "Code for
+%                part 2" ,etc
+%          --  all items requested in parts 1 to 5 (hardcopies)
+%         AND WE RESERVE THE RIGHT TO INSPECT ELECTRONIC VERSION
+%        OF THE PROGRAM IN THEIR hwk3 subdirectory     
+%      
+%    b) This is a hwk, so cannot tell you how to do it. We can only
+%         give you a tip of the form `` look at section xx in your
+%          IDL tutorial'' or ``review the function where''
+%
+%    c) The catalog you have in this homework is  TREASURE TROVE OF 
+%        OF INFORMATION THAT TOOK ASTRONOMERS 5 YEARS TO UP TOGETHER
+%        USING SOME OF THE MOST CUTTING EDGE SURVEYS DONE TO DATE.
+%         IT TOOK THREE MAJOR SURVEYS OF GALAXIES FROM
+%         THE GROUND (COMBO-17), ACS GEMS survey, and SPITZER SURVEY 
+%         AND A LOT OF MODELING TO GET  M*, SFR_uv, SFR_ir, ETC 
+%
+%     d)  - Part 1:  If a catalog is written out with the following format 
+%           format ='(G,1x,G,1x,A,1x,G)
+%     then to read it in with readcol, you need to use format 
+%            format ='(G,F,A,F)    --> replace F by G, and remove 1x
+% 
+%  e)  Part 3 to 5:  plotting log(x) is not same as plotting x on log scale
+%      Part 3 to 5 : how to label with Greek symbols like Mo, or superscript    yr-1
+%      Part 5: explain legend 
+%
+
+
+\begin{center}
+\vspace{3.0 mm}
+\noindent
+{\bf{ Overview of Assignment}} 
+%{\bf{Instructions}} 
+\end{center}
+
+\begin{itemize}
+\item 
+\noindent
+In this homework, you will be applying what you have learnt in the
+Python tutorial over the last few weeks, and going beyond the tasks
+you did in homework 3.  For some questions, you will need
+to go beyond the Python tutorial and consult online help. 
+We also assume that by now, you are comfortable with basic Mac 
+OSX/Linux commands and some text editor of your choice (like
+Aquamacs or Vi). Recall that you can let Terminal choose a text editor
+for you if you type `{\tt{open file}}'. If you need a refresher, please consult
+the Mac OSX/Linux tutorial that you practiced in class earlier.
+The number of points for each question is indicated in brackets,
+and the total score is 100 points.
+
+\item 
+\noindent
+Your main task is to write an Python program, which does the following: 
+
+\vspace{-3mm}
+\begin{itemize}
+\item 
+\noindent
+Reads a  very large formatted catalog containing properties
+of galaxies (e.g., their redshifts, stellar masses,  and rates of star
+formation) out  to early epochs  {\it {when the Universe was less than 
+half of its present age}}.
+These properties were  derived using some of the most
+cutting-edge surveys of galaxies conducted with NASA's 
+{\it {Hubble Space Telescope}}  and   Spitzer Space Telescope,
+as well as  ground-based observations at many different wavelengths.
+
+\item 
+\noindent 
+Uses conditional operations on array indices to extract elements 
+that satisfy specific criteria  (e.g., specific redshift ranges,
+masses,  etc).
+
+\item  
+\noindent 
+Performs specific operations and basic statistical analyses on select 
+elements.
+
+
+\item  
+\noindent 
+Produces different graphical representations of the results, including 
+scatter plots, and  histograms.
+
+\item  
+\noindent 
+Produces formatted output catalogs
+
+\end{itemize}
+\end{itemize}
+
+
+\begin{center}
+\vspace{3.0 mm}
+\noindent
+{\bf{ Detailed Instructions}}
+\end{center}
+
+\begin{enumerate}[(a)]
+
+\item 
+\vspace{2.0 mm}
+\noindent
+Create a sub-directory called `hwk4'  in your python directory and change 
+(cd) to this directory. 
+Retrieve the file {\it `hwk4-catalog.txt'}  by typing in a {\bf single} line 
+\begin{lstlisting}
+ curl -u cosmos:ast376web www.as.utexas.edu/~sj/a376-sp21/secure/hwk4/
+ hwk4-catalog.txt -o hkw4-catalog.txt
+\end{lstlisting} 
+
+\item 
+\noindent
+Put all the files that you create for this homework into the 
+sub-directory  `$\sim$/python/hwk4'.
+{\it Your grade will be based  on the hardcopy of the homework that 
+you hand in, as well as any electronic files you might be asked to 
+produce in this directory.}
+
+
+
+\item 
+\noindent
+Please write a single Python program 
+to do all the questions in this homework and put in 
+{\it {short comments within the program to indicate which part of the code 
+addresses which question.}} For instance, the comments might read `Code
+for question 1',  `Code for  question 2', etc. 
+{\it{ Please name your Python program    `hwk4-myname.py', where  `myname' is  
+your name  (e.g.,   hwk4-jogee-shardha.py.)}}  
+{\bf{Please submit your Python file with your name on it on
+Canvas, along with the other items requested in questions 1 to 8.}}
+
+
+\item 
+\noindent
+{\bf{
+For full credit, you must use the correct  way to program
+in Python.}} Getting to the right answer using a bad method will 
+only get you  partial credit. Note that copying the programs of your 
+fellow students is considered as {\bf cheating} and will lead to a ``Fail'' grade for both
+the person who copies the program and the person who allow 
+their program to be copied.
+\end{enumerate}
+
+
+\begin{enumerate}
+
+\vspace{1mm}
+\item
+\noindent
+The catalog  `hwk4-catalog.txt' has information on a subset of 
+galaxies, which have been observed with the optical 
+Advanced Camera for Surveys (ACS) on the {\it Hubble Space Telescope}
+and the mid-infrared MIPS  instrument at a wavelength of 24 microns aboard 
+the {\it Spitzer Space Telescope}.  In addition, observations from 
+ground-based telescopes from the ultra-violet (UV) to near-infrared (NIR) 
+have also been taken.  Read through the header information in the catalog
+to understand the different quantities that have been recorded for 
+each galaxy. 
+
+In this question, `log' denotes
+the logarithm to the base 10,  $M$ is the stellar mass in unit of  
+$M_{\odot}$, and SFR$_{\rm UV}$ is the unobscured
+UV-based star formation rate  in units of $M_{\odot}$  yr$^{-1}$,
+determined from UV data.
+Write a Python program, 
+which makes a plot of $\log$(SFR$_{\rm UV}$) versus $\log(M$), for 
+those galaxies with photometric redshift $z$ in the range 
+$0.47 < z \le 0.62$, and  stellar masses 
+$M \ge$~$5 \times  10^{9}$ $M_{\odot}$. 
+This redshift range corresponds to lookback times of 
+4 to 5 billion years, an epoch when the Universe was 9.7 to 8.7 
+billion years old or about two-thirds of its present age. 
+Plot the galaxies as black triangles or black stars.
+Label the x-axis with  `$\log(M/M_{\odot}$)', and the y-axis with
+`$\log$(SFR$_{\rm UV}$/$M_{\odot}$  yr$^{-1}$)'.
+Add a legend labeled `z =0.47--0.62' in one corner of the plot.
+Save a copy of the figure in PDF format and turn it in.
+ {\bf [25 points]}
+
+\vspace{1mm}
+\item
+\noindent
+For the galaxies selected in part (1), use Python to determine the
+minimum, maximum, and median UV-based star formation rate in unit of 
+$M_{\odot}$ yr$^{-1}$. You can do this by extending the Python program
+in part (1) or writing a new program. We recommend the former method.
+Submit a copy of your answers in a text file. 
+ {\bf [10 points]}.
+ 
+
+\vspace{1mm}
+\item
+\noindent 
+The UV data  traces the unobscured star formation, namely star
+formation that is not obscured by dust. Thus, the UV-based 
+star formation rate
+is a lower limit to the true total star formation rate. 
+The  {\it Spitzer} 24 micron
+observations trace the obscured part of the star formation and yield
+the infrared-based obscured star formation rate, SFR$_{\rm IR}$. 
+Unfortunately, only galaxies with fairly large infrared luminosities
+are detected by the   {\it Spitzer} 24 micron observations, and 
+SFR$_{\rm IR}$ are only available for those systems. In these cases, 
+the total star formation rate, SFR$_{\rm tot}$, can  be calculated 
+as (SFR$_{\rm IR}$ +  SFR$_{\rm UV}$). The value of the  `whmips'
+parameter in  the catalog indicates whether or not there was a successful 
+{\it Spitzer} 24 micron detection.
+
+
+\noindent 
+For galaxies with a successful {\it Spitzer} 24 micron detection, 
+a photometric redshift $z$ in the range  $0.47 < z \le 0.62$, and 
+stellar masses  $M \ge$~$5 \times  10^{9}$ $M_{\odot}$, write 
+a Python program, which  makes a plot of  $\log$(SFR$_{\rm tot}$) 
+versus $\log(M$).
+Plot galaxies with $SFR_{\rm tot} \ge 3.0 \  M_{\odot}$ yr$^{-1}$ (i.e., 
+with star formation rates higher than that of our Milky Way) as red stars, 
+and the remaining galaxies as black stars. 
+Label the x-axis with  `$\log(M/M_{\odot}$)', and the y-axis with
+`$\log$(SFR$_{\rm tot}$/$M_{\odot}$  yr$^{-1}$)'.
+Add a legend label for both data sets. Label the red stars as: `SFR$_{\rm tot} \geq 3.0 M_{\odot}$ yr$^{-1}$'
+and label the black stars as `SFR$_{\rm tot} < 3.0 M_{\odot}$ yr$^{-1}$.
+Save a copy of the figure in PDF format and turn it in.
+{\bf [10 points]}.
+
+
+\vspace{1mm}
+\item
+\noindent
+For the galaxies selected in part (3), use Python to determine the
+minimum, maximum, and median value of the total star formation 
+rate (SFR$_{\rm tot}$), as well as the median value of the
+UV-based star formation rate (SFR$_{\rm UV}$), 
+in units of $M_{\odot}$ yr$^{-1}$. 
+For these galaxies, what is the ratio $R$ of 
+(median SFR$_{\rm tot}$/median  SFR$_{\rm UV}$)?
+This ratio $R$ is a measure of how obscured the star formation sites
+are.
+Submit your answer in a text file. 
+{\bf [10 points]}.
+
+
+
+\vspace{1mm}
+\item
+\noindent
+In addition to inspecting the mean or median value of the 
+star formation rates, one can glean important conclusions from 
+the distribution of star formation rates. 
+For the galaxies selected in part (3), use Python to  make a plot that 
+overlays two normalized histograms: a histogram of 
+SFR$_{\rm tot}$ in  solid lines,  and  a histogram of SFR$_{\rm UV}$ 
+in dotted lines.  
+Label the y-axis with `Fraction of Galaxies' and the x-axis with 
+`SFR ($M_{\odot}$  yr$^{-1}$)'.  
+In one corner of the plot, add a legend to show that the solid
+line represents SFR$_{\rm tot}$ , while the dotted line represents  
+SFR$_{\rm UV}$. 
+Save a copy of the figure in PDF format.
+{\bf [15 points]}.
+
+
+\vspace{1mm}
+\item
+\noindent
+Our Galaxy, the Milky Way currently has a stellar mass of 
+$4.3 \times  10^{10}$ $M_{\odot}$ and a total star formation rate 
+of $\sim$ $3 M_{\odot} yr^{-1}$. 
+Among the galaxies selected in part (3), 
+how many systems are already more massive than the Milky way, 
+4 to 5 billion years ago? 
+Among the galaxies selected in part (3), 
+how many systems had a SFR$_{\rm tot}$ exceeding that of 
+the Milky Way, 4 to 5 billion years? 
+Submit your answer in a text file. 
+{\bf [10 points]}.
+
+\vspace{1mm}
+\item
+\noindent
+Among the galaxies selected in part (3), extract the 30 galaxies with
+the largest stellar mass, and write out their properties (listed in  the 
+original catalog  `hwk4-catalog.txt')  into a file called 
+``list.massive.xxxxx.txt'', where xxxx is your last name. Be
+sure to save the data as strings if using numpy.
+Submit a copy of this file and of your Python program.
+{\bf [10 points]}.
+
+
+\vspace{1mm}
+\item
+\noindent
+Repeat step (7), but extract the  30 galaxies with the largest 
+total star formation rate, and call the file ``list.highest-sfr.xxxxx.txt'', 
+where xxxx is your last name.
+Submit a copy of this file and of your Python program.
+{\bf [10 points]}.
+
+\end{enumerate}
+
+\vspace{2mm}
+
+\noindent
+{\textbf{For this assignment, you will submit the following:}}
+\begin{itemize}
+	\item A copy of your Python (.py) script file. If you created multiple script files to solve the HW,
+		consolidate all of them into one code or submit them separately. If you choose the latter, please
+		state clearly at the top of each .py file which part of the HW that script file is answering.
+	\item A compressed .tar.gz file containing your figure outputs, in PDF format, for questions 1, 3, and 5.
+	\item A text file containing your answers to questions 2, 4, and 6. The format of this file is not important, 
+		we just need to see the answers written down somewhere.
+	\item Two separate output catalogs corresponding to questions 7 and 8.
+\end{itemize}
+
+\noindent
+We will review your python (.py) script files when we grade your submission, however, you should not expect us to run the code to obtain the answers to questions 2, 4, and 6.
+
+\begin{center}
+END OF ASSIGNMENT
+\end{center}
+
+\end{document}
+
+
+latex hwk4-idl.tex
+dvips -P pdf -o hwk4-idl.ps hwk4-idl
+ps2pdf13  hwk4-idl.ps  hwk4-idl.pdf
+or
+
+pdflatex hwk4-idl.tex
